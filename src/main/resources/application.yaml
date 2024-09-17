@@ -1,0 +1,65 @@
+spring:
+  jpa:
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate.default_batch_fetch_size: 1000
+      hibernate.default_schema: public
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    generate-ddl: false
+    database: POSTGRESQL
+    database-platform: postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5433/test_db?useSSL=false&useUnicode=true&characterEncoding=utf-8
+    username: postgres
+    password: postgres
+
+kafka:
+  consume:
+    enable: true
+  server:
+    addresses: localhost:29092
+  group-id:
+    prefix: test
+  topics:
+    consumer:
+      store:
+        success: STORE_CREATED_UPDATED_SUCCESS
+        failed: STORE_CREATED_UPDATED_FAILED
+      group-id: kafka-example-${kafka.group-id.prefix}
+    producer:
+      store:
+        success: STORE_CREATED_UPDATED_SUCCESS
+        failed: STORE_CREATED_UPDATED_FAILED
+
+    partition-value: 1
+    replica-value: 1
+  producer-config:
+    acks: all
+    batch-size: 16384
+    batch-size-boost-factor: 100
+    linger-ms: 5
+    request-timeout-ms: 60000
+    retry-count: 5
+
+  consumer-config:
+    auto-offset-reset: earliest
+    batch-listener: false
+    auto-startup: true
+    concurrency-level: 3
+    session-timeout-ms: 10000
+    heartbeat-interval-ms: 3000
+    max-poll-interval-ms: 30000
+    max-partition-fetch-bytes-default: 1048576
+    max-partition-fetch-bytes-boost-factor: 1
+    poll-timeout-ms: 150
+    deadletter-prefix: KafkaExampleServiceDeadLetter
+    max-poll-records: 1
+
+retryable:
+  config:
+    defaultRetry:
+      delay: 100
+      maxDelay: 500
+      multiplier: 3
